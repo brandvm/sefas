@@ -3,6 +3,11 @@
 JavaScript and CSS supplied for SEFAS, served from this public repository through
 jsDelivr. The Webflow fields reference release `v1.0.0`.
 
+The snippets on `main` include numbered comments explaining each integration,
+installation location, and script loading order. With comments, Head code is
+2,055 characters and Footer code is 2,458 characters. The hosted JavaScript and
+CSS still use the unchanged `v1.0.0` release.
+
 ## Install in Webflow
 
 1. Replace the **Head code** field with the complete contents of

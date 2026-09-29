@@ -1,9 +1,40 @@
+<!--
+SEFAS | FOOTER CUSTOM CODE
+Paste this entire block into Webflow: Site settings > Custom code > Footer code
+(before the closing body tag). Replace the previous footer snippet.
+Custom assets are pinned to release v1.0.0.
+
+Keep this script order. GSAP and ScrollTrigger must load before section 03.
+Only the Wistia player uses async; the other tags preserve execution order.
+Existing data-cmp-ab attributes are retained for the consent configuration.
+-->
+
+<!-- 01 | Wistia: loads the video player asynchronously, as in the original code. -->
 <script src="https://fast.wistia.net/player.js" async="" data-cmp-ab="2"></script>
+
+<!-- 02 | Lenis library: must load before the smooth-scroll initializer below. -->
 <script src="https://unpkg.com/lenis@1.1.5/dist/lenis.min.js" data-cmp-ab="2"></script>
+
+<!-- 03 | Smooth scrolling: connects Lenis to the existing GSAP / ScrollTrigger ticker. -->
 <script data-cmp-ab="2" src="https://cdn.jsdelivr.net/gh/brandvm/sefas@v1.0.0/assets/js/lenis-init.js"></script>
+
+<!-- 04 | Demo links: opens the request-demo panel when the URL uses #request-demo. -->
 <script data-cmp-ab="2" src="https://cdn.jsdelivr.net/gh/brandvm/sefas@v1.0.0/assets/js/request-demo.js"></script>
+
+<!-- 05 | Site modules: sliders, back-to-top buttons, click-on-load behavior,
+     shrinking navigation, styled text, and touch-button transitions. -->
 <script data-cmp-ab="2" src="https://cdn.jsdelivr.net/gh/brandvm/sefas@v1.0.0/assets/js/site-modules.js"></script>
+
+<!-- 06 | Accessibility: skip link, French labels, quotations, filter status,
+     and keyboard / visibility behavior for the demo and navigation panels. -->
 <script data-cmp-ab="2" src="https://cdn.jsdelivr.net/gh/brandvm/sefas@v1.0.0/assets/js/accessibility.js"></script>
+
+<!-- 07 | Iubenda button semantics: repairs the preferences button label markup. -->
 <script id="sefas-iubenda-preferences-semantics" src="https://cdn.jsdelivr.net/gh/brandvm/sefas@v1.0.0/assets/js/iubenda-semantics.js"></script>
+
+<!-- 08 | Iframe accessibility: adds descriptive French titles to known embeds. -->
 <script id="sefas-frame-titles-20260928" src="https://cdn.jsdelivr.net/gh/brandvm/sefas@v1.0.0/assets/js/frame-titles.js"></script>
+
+<!-- 09 | Wistia privacy: the additional supplied Iubenda integration.
+     Queues video privacy-setting updates; validate consent behavior on staging. -->
 <script src="https://cdn.jsdelivr.net/gh/brandvm/sefas@v1.0.0/assets/js/wistia-privacy.js"></script>

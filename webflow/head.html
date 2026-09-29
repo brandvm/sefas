@@ -1,14 +1,37 @@
+<!--
+SEFAS | HEAD CUSTOM CODE
+Paste this entire block into Webflow: Site settings > Custom code > Head code.
+Replace the previous head snippet to avoid loading duplicate integrations.
+Custom assets are pinned to release v1.0.0.
+-->
+
+<!-- 01 | Iubenda: loads the existing consent-management widget. -->
 <script type="text/javascript" src="https://embeds.iubenda.com/widgets/75372d29-fbbe-4115-a58d-cb55bf73034a.js"></script>
+
+<!-- 02 | Google Tag Manager: loads container GTM-NQHZR3VG and initializes dataLayer. -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-NQHZR3VG');</script>
+
+<!-- 03 | Adobe Fonts: loads the Typekit kit, then initializes its fonts. -->
 <script src="https://use.typekit.net/wht8anh.js"></script>
 <script>try{Typekit.load({ async: true });}catch(e){}</script>
+
+<!-- 04 | Existing metadata. The %%title%% and %%description%% values are template
+     placeholders from the original code. If your workflow does not replace
+     them, use Webflow page SEO settings for the real title and description. -->
 <meta charset="utf-8"/>
 <meta name="description" content="%%description%%"/>
 <title>%%title%%</title>
+
+<!-- 05 | Google Fonts: loads Raleway for the existing form styles. -->
 <link href="https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,500,500i,600,700,800&display=swap" rel="stylesheet"/>
+
+<!-- 06 | Browser theme color: SEFAS purple on browsers that support this setting. -->
 <meta name="theme-color" content="#941EA3" />
+
+<!-- 07 | Site stylesheet: form styles, utility rules, Lenis, focus indicators,
+     contrast adjustments, skip-link styling, and semantic navigation lists. -->
 <link id="sefas-semantic-nav-list-style" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/brandvm/sefas@v1.0.0/assets/css/site.css">

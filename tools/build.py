@@ -14,6 +14,39 @@ NAMES = [
     'lenis-init', 'request-demo', 'site-modules', 'accessibility',
     'iubenda-semantics', 'frame-titles', 'wistia-privacy',
 ]
+HEAD_SECTIONS = [
+    ('<script type="text/javascript" src="https://embeds.iubenda.com/',
+     '01 | Iubenda: loads the existing consent-management widget.'),
+    ('<script>(function(w,d,s,l,i)',
+     '02 | Google Tag Manager: loads container GTM-NQHZR3VG and initializes dataLayer.'),
+    ('<script src="https://use.typekit.net/',
+     '03 | Adobe Fonts: loads the Typekit kit, then initializes its fonts.'),
+    ('<meta charset=',
+     '04 | Existing metadata. The %%title%% and %%description%% values are template\n'
+     '     placeholders from the original code. If your workflow does not replace\n'
+     '     them, use Webflow page SEO settings for the real title and description.'),
+    ('<link href="https://fonts.googleapis.com/',
+     '05 | Google Fonts: loads Raleway for the existing form styles.'),
+    ('<meta name="theme-color"',
+     '06 | Browser theme color: SEFAS purple on browsers that support this setting.'),
+    ('<link id="sefas-semantic-nav-list-style"',
+     '07 | Site stylesheet: form styles, utility rules, Lenis, focus indicators,\n'
+     '     contrast adjustments, skip-link styling, and semantic navigation lists.'),
+]
+FOOTER_SECTIONS = [
+    '01 | Wistia: loads the video player asynchronously, as in the original code.',
+    '02 | Lenis library: must load before the smooth-scroll initializer below.',
+    '03 | Smooth scrolling: connects Lenis to the existing GSAP / ScrollTrigger ticker.',
+    '04 | Demo links: opens the request-demo panel when the URL uses #request-demo.',
+    '05 | Site modules: sliders, back-to-top buttons, click-on-load behavior,\n'
+    '     shrinking navigation, styled text, and touch-button transitions.',
+    '06 | Accessibility: skip link, French labels, quotations, filter status,\n'
+    '     and keyboard / visibility behavior for the demo and navigation panels.',
+    '07 | Iubenda button semantics: repairs the preferences button label markup.',
+    '08 | Iframe accessibility: adds descriptive French titles to known embeds.',
+    '09 | Wistia privacy: the additional supplied Iubenda integration.\n'
+    '     Queues video privacy-setting updates; validate consent behavior on staging.',
+]
 
 
 class Attributes(HTMLParser):
@@ -41,7 +74,15 @@ def main():
     head = re.sub(r'\n\s*\n', '\n', head).strip()
     head += ('\n<link id="sefas-semantic-nav-list-style" rel="stylesheet" '
              f'href="{base}/assets/css/site.css">\n')
-    outputs['webflow/head.html'] = head
+    for marker, description in HEAD_SECTIONS:
+        assert head.count(marker) == 1, f'Review head section marker: {marker}'
+        head = head.replace(marker, f'\n<!-- {description} -->\n{marker}', 1)
+    outputs['webflow/head.html'] = (
+        '<!--\nSEFAS | HEAD CUSTOM CODE\n'
+        'Paste this entire block into Webflow: Site settings > Custom code > Head code.\n'
+        'Replace the previous head snippet to avoid loading duplicate integrations.\n'
+        f'Custom assets are pinned to release {args.version}.\n-->\n' + head
+    )
 
     tags = []
     inline_count = 0
@@ -67,7 +108,20 @@ def main():
     remainder = SCRIPT.sub('', footer)
     assert not re.sub(r'<!--.*?-->', '', remainder, flags=re.S).strip(), \
         'Unexpected non-script footer content; preserve it explicitly.'
-    outputs['webflow/footer.html'] = '\n'.join(tags) + '\n'
+    assert len(tags) == len(FOOTER_SECTIONS), 'Review footer section comments.'
+    outputs['webflow/footer.html'] = (
+        '<!--\nSEFAS | FOOTER CUSTOM CODE\n'
+        'Paste this entire block into Webflow: Site settings > Custom code > Footer code\n'
+        '(before the closing body tag). Replace the previous footer snippet.\n'
+        f'Custom assets are pinned to release {args.version}.\n\n'
+        'Keep this script order. GSAP and ScrollTrigger must load before section 03.\n'
+        'Only the Wistia player uses async; the other tags preserve execution order.\n'
+        'Existing data-cmp-ab attributes are retained for the consent configuration.\n'
+        '-->\n\n' + '\n\n'.join(
+            f'<!-- {description} -->\n{tag}'
+            for description, tag in zip(FOOTER_SECTIONS, tags)
+        ) + '\n'
+    )
 
     for name, content in outputs.items():
         path = ROOT / name
