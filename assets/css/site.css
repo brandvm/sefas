@@ -1,0 +1,182 @@
+
+  body{
+    margin:0;
+  }
+  body form.form{
+    margin:0;
+    padding:0;
+  }
+  form.form p.form-field{
+    margin:0;
+    padding:0 0 14px;
+  }
+  div.form-field-wrapper{
+    position: relative;
+  }
+  form.form p.form-field label.field-label{
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    display: block;
+    padding:0 0 2px;
+    color: #777777;
+  }
+  form.form p label{
+    font-family: 'Raleway', sans-serif;
+  }
+  form.form p label.inline{
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+  form.form input.text, form.form textarea{
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    line-height: 20px !important;
+    letter-spacing: -0.2px;
+    color: #404750 !important;
+    border-radius: 0 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    height: auto !important;
+    width: 100% !important;
+    padding: 10px 10px 10px !important;
+    display: block !important;
+    border: 1px solid #d8dde3 !important;
+    box-sizing: border-box !important;
+    outline:0 !important;
+    -webkit-appearance:none;
+  }
+  form.form p.submit input{
+    cursor:pointer;
+    font-family: 'Raleway', sans-serif;
+    display: inline-block;
+    border-radius: 25px;
+    box-shadow: none;
+    background: #C1FE00;
+    border: 0;
+    color: #000000;
+    font-size: 12px;
+    line-height: 20px;
+    font-weight: 700;
+    padding: 17px 30px 13px !important;
+    vertical-align: middle;
+    letter-spacing: 2px;
+    text-decoration: none;
+    text-transform: uppercase;
+    outline: 0;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -webkit-appearance: none;
+  }
+  form.form .pd-checkbox label.inline{
+    padding: 0  !important;
+    text-indent: 0  !important;
+    position: relative  !important;
+    font-size: 18px  !important;
+    line-height: 28px  !important;
+    letter-spacing: -0.25px  !important;
+    color: #777777  !important;
+    font-weight: 600  !important;
+    font-family: 'Raleway', sans-serif  !important;
+  }
+  form.form p.submit input:hover{
+    opacity: 0.8;
+  }
+  form.form p.submit{
+    margin:20px 0 0;
+    text-align: left;
+  }
+  form.form p.form-field.no-label{
+    margin-left: 0;
+  }
+  form.form textarea{
+    height: 199px !important;
+    resize: none;
+  }
+  form.form .pd-checkbox .value span{
+    float: none !important;
+    display: inline-block;
+  }
+  form.form p.errors{
+    font-family: 'Raleway', sans-serif;
+    font-weight: 500;
+    color: #FF0000;
+  }
+  form.form .form-field-wrapper .error.no-label{
+    padding: 0;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 500;
+    color: #FF0000;
+    position: absolute;
+    right: 0;
+    bottom: 0px;
+    font-size: 11px;
+    line-height: normal;
+  }
+  form.form div.form-field-wrapper p.checkbox label{
+    margin-left: 5px;
+    vertical-align: baseline;
+  }
+  div.form-field-wrapper p.checkbox input{
+    margin:0;
+  }
+
+
+  /* Hiding Dev Supports */
+  .g-embed-code,
+  /* .g-grid-guide, */
+  .w-webflow-badge,
+  .cms-filter {
+    z-index: -99999 !important;
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+
+  .swiper-wrapper {
+    flex-direction:row;
+    flex-wrap:nowrap !important;
+  }
+
+  /* --------- Lenis Smooth Scrolling --------- */
+  html.lenis {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+.g-nav-drop-toggle:focus-visible {
+  outline: 3px solid #110114;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px #fff;
+}
+
+
+/* Keyboard bypass and persistent status text. */
+.a11y-skip-link { position: fixed; top: 8px; left: 8px; transform: translateY(-200%); z-index: 2147483647; padding: 12px 18px; background: #fff; color: #110114; font-size: 16px; line-height: 1.5; }
+.a11y-skip-link:focus { transform: none; outline: 3px solid #941ea3; outline-offset: 3px; }
+.a11y-visually-hidden { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
+/* Scope contrast corrections to the audited light and dark surfaces. */
+.content-rte.is_top-bar a { color: #941ea3 !important; }
+.resource-card-titles .u-muted-50 { color: #6b6b6b !important; }
+.sw-footer-cta h2 .u-primary { color: #b02ccc !important; }
+.a11y-quote { margin: 0; padding: 0; border: 0; }
+.a11y-inline-quote::before, .a11y-inline-quote::after { content: none; }
+
+
+
+ul.g-nav-link-list,ul.g-nav-link-list>li{list-style:none;margin:0;padding:0}
+ul.g-nav-link-list>li:has(>.g-nav-group){width:100%}
+
