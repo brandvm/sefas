@@ -1,4 +1,28 @@
-# Release v1.0.0 validation
+# Release validation
+
+## v2.0.0 — wf-template migration
+
+Validated on 2026-10-07.
+
+- `pnpm check` passes with TypeScript strict mode.
+- `pnpm test` builds the committed distribution and passes 19 Chromium tests.
+- Environment tests cover development/staging selection, production pinning,
+  fallback behavior, keyboard/mobile use, blocked storage, duplicate loading,
+  and prevention of accidental localhost requests.
+- Resources filter regression tests confirm that Finsweet's
+  `.is-list-active` state displays the active control even when Webflow's
+  decorative state is absent, and that a stale Webflow checked class cannot
+  display an inactive filter.
+- Existing JavaScript behavior from `v1.0.0` remains in `src/legacy/` and is
+  bundled in its original execution order. Lenis `1.1.5` is bundled directly;
+  Wistia is loaded once by its initializer.
+- Existing hosted CSS and the published global Embed styles were migrated into
+  `src/styles.css`; Google Fonts and Phosphor Icons are loaded from that sheet.
+- `v1.0.0` remains immutable for rollback. Webflow staging and real consent,
+  slider, form, navigation and video behavior must still be checked after the
+  three `loader.html` sections are installed and before production publish.
+
+## v1.0.0 — hosting migration
 
 Validated on 2026-09-29.
 

@@ -4,27 +4,20 @@ Agent instructions for this repository. Codex, Cursor and similar tools read
 this file directly; Claude Code reads it through `CLAUDE.md`. It is the single
 source of agent rules — edit this file, never a copy of it.
 
-This is a **hosting migration of inherited code**, not a project built from
-`brandvm/wf-template`. The supplied Webflow Head and Footer fields were
-externalized, unchanged, into files served from pinned jsDelivr tags. There
-is no bundler, no npm install, no loader and no staging bundle — only a
-Python generator.
-
 ## Project facts
 
-- Client / site: SEFAS
+- Client / site: SEFAS / Messagepoint France
 - GitHub: `brandvm/sefas`, default branch `main`
-- Webflow site ID: `6a6b877f2665785581430d2b` (inferred from the Webflow
-  asset CDN path in `assets/js/site-modules.js`; verify)
-- Staging site: unknown — fill in (README refers to "the Webflow staging
-  domain" without naming it)
-- Assets (production, pinned): `https://cdn.jsdelivr.net/gh/brandvm/sefas@v1.0.0/`
-  → `assets/css/site.css` and seven `assets/js/*.js` files
-- Production domain: unknown — fill in
-- Production release: `v1.0.0`
-- Third parties in the snippets: Iubenda, GTM `GTM-NQHZR3VG`, Adobe Fonts
-  (Typekit), Google Fonts (Raleway), Wistia, Lenis 1.1.5 from unpkg. Webflow
-  supplies GSAP and ScrollTrigger.
+- Webflow site ID: `6a6b877f2665785581430d2b`
+- Staging site: confirm the current `*.webflow.io` domain before publishing
+- Staging bundles: `https://brandvm.github.io/sefas/`
+- Production domain: `https://www.sefasinnovation.fr`
+- Production release: `v2.0.0` in `loader.html`; `v1.0.0` is the rollback release
+
+Release `v2.0.0` migrated inherited code into this template. The migrated
+legacy CSS and JavaScript remain behavior-compatible and may not yet satisfy
+every new-project organization rule. Preserve parity first; refactor only in
+separate, tested changes.
 
 ## Who owns what
 
@@ -32,12 +25,12 @@ Webflow owns markup, layout, classes, components, CMS content, interactions
 **and styling by default**. This repo owns JavaScript behaviour and only the
 CSS the Designer cannot express.
 
-That split is deliberate. Repo CSS loads from Head code after `webflow.css`,
+That split is deliberate. Repo CSS loads from an Embed after `webflow.css`,
 so it wins every specificity tie against the Designer. Any rule written here
 that the Designer could have expressed becomes a hidden override: the next
 person changes that style in the Designer, nothing happens, and the only fix
-is edit `source/` → regenerate → tag a release → re-paste the snippets →
-publish. Every project has lost time to that loop.
+is edit `src/` → push → wait for staging → reload the Designer. Every project
+built from this template has lost time to that loop.
 
 ## CSS policy — Designer first
 
@@ -49,8 +42,7 @@ Before writing any CSS, decide where it belongs.
      variables tools), then tell the user what was changed.
    - Without the MCP, give the user exact Designer steps: class, breakpoint,
      property, value.
-   - Do **not** add it to the `<style>` blocks in `source/head.html` (which
-     generate `assets/css/site.css`).
+   - Do **not** add it to `src/styles.css`.
 2. **Repo CSS needs a reason.** Every rule — or the section header comment
    covering a group of rules — carries one tag from this list:
 
@@ -73,95 +65,66 @@ Before writing any CSS, decide where it belongs.
    neutralize `.w-*` defaults, or reference Webflow variable names
    (`--_layout---…`, `--_typography---…`). A renamed variable in Webflow
    silently breaks every rule that reads it — Webflow rewrites its own
-   references, never this repo's.
+   references, never this bundle's.
 5. **Ambiguous request?** Say which parts go in the Designer and which go in
    code before editing anything. "Make the heading bigger on mobile" is a
    Designer breakpoint style, not a media query here.
 
-Existing rules predate this policy and are untagged; add a `repo-css` tag to
-any rule you touch, and question rules the Designer could own. (Most
-inherited rules style the embedded third-party form markup —
-`form.form …` — plus focus, contrast, skip-link and navigation-list fixes.)
+## Read before changing integration
 
-## Inherited code stays behaviour-identical
+- `README.md` — commands, daily flow, release, handoff.
+- `loader.html` — the three snippets pasted into Webflow (head code, the
+  CSS/config Embed on the canvas, footer code). Read it before touching any
+  of them.
+- `src/index.ts` is a manifest: one `run('<name>', init<Name>)` call per
+  module, so a module that throws is logged and the rest still run. Features
+  go in `src/modules/`, one file each, exporting an init function that no-ops
+  when its target markup is absent.
+- `src/styles.css` opens with cascade notes. Add rules to the section they
+  belong to, never to the end of the file.
+- Third-party libraries are bundled with `pnpm add`, not added as CDN tags.
+  The footer loader appends the bundle dynamically, so a sibling
+  `<script defer>` has no ordering guarantee.
 
-All CSS and JS here is inherited code, and the migration's guarantee is
-that it runs exactly as supplied. Unless the user asks otherwise:
+## Webflow canvas facts
 
-- JavaScript bodies stay byte-identical to the blocks in
-  `source/footer.html`; the four CSS blocks stay identical to the
-  `<style>` blocks in `source/head.html`. `tools/build.py --check` enforces
-  this — never edit `assets/` or `webflow/` by hand.
-- No refactors, reformatting, minification, rule reordering, library
-  upgrades (Lenis, Wistia, Iubenda, Typekit) or "cleanups" mixed into
-  another change. Propose them separately.
-- Keep script order, script IDs, `data-cmp-ab` consent attributes and the
-  `sefas-semantic-nav-list-style` link ID. Do not add `async` or `defer` to
-  migrated scripts.
-- Keep the `%%title%%` / `%%description%%` placeholders unless the user
-  decides otherwise (see `GOTCHAS.md`).
-
-## Architecture
-
-- `source/head.html`, `source/footer.html` — the supplied Webflow fields
-  (plus the appended Wistia privacy block). **This is where code is
-  edited.**
-- `tools/build.py` (Python 3; uses `node --check` on each JS file):
-  - extracts exactly **4** `<style>` blocks from the head into
-    `assets/css/site.css` and replaces them with one pinned `<link>`;
-  - extracts exactly **7** inline footer scripts, in order, into
-    `assets/js/<NAMES[i]>.js` (`lenis-init`, `request-demo`, `site-modules`,
-    `accessibility`, `iubenda-semantics`, `frame-titles`, `wistia-privacy`)
-    and replaces each with a pinned `<script src>`, dropping the inert
-    inline `defer`;
-  - writes `webflow/head.html` and `webflow/footer.html` with numbered
-    section comments (`HEAD_SECTIONS` / `FOOTER_SECTIONS`) and asserts each
-    field stays under Webflow's 50,000-character limit.
-- Adding or removing a style block or inline script means updating the
-  counts, `NAMES` and the section lists in `tools/build.py` — the asserts
-  fail otherwise. Do that only on request.
-- `VALIDATION.md` records how v1.0.0 was validated. Update it for a release.
-
-## Where code loads in Webflow (drives the Designer workflow)
-
-| Snippet | Webflow location | Contents |
-| --- | --- | --- |
-| `webflow/head.html` | Site settings → Custom code → Head | Iubenda, GTM, Typekit, metadata, Google Fonts, theme-color, `<link>` to `site.css` |
-| `webflow/footer.html` | Site settings → Custom code → Footer | Wistia, Lenis, then the seven pinned scripts in order |
-
-- CSS loads from **Head code, so none of it is visible on the Designer
-  canvas** (custom code is not rendered there). Check CSS on the published
-  staging site. This is another reason to put styling in the Designer.
-- **The Designer canvas never runs scripts.** No live reload; reload the
-  Designer tab after publishing.
-- GSAP and ScrollTrigger (Webflow) must load before footer section 03.
+- **The Designer canvas never runs scripts.** Anything shown only after JS
+  runs is invisible there; use a `canvas-preview` rule if the Designer needs
+  to see it.
+- **The canvas shows the staging stylesheet only.** Seeing a CSS change in
+  the Designer means push → ~1 min → reload the Designer tab. Never add a
+  static `http://localhost` link to the Embed for good — every public
+  visitor's browser would request it. `loader.html` describes the temporary
+  opt-in; if one is in use, the local and staging sheets are additive and a
+  deleted rule keeps applying from staging until pushed.
+- No live reload on the canvas. Reload the Designer tab.
+- Debug "is my CSS loading?" with `background`, not `outline` — outlines on
+  `body` paint outside the canvas iframe and get clipped.
 
 ## Snippets are not versioned
 
-A push or tag changes nothing on the site. The release tag is pinned in
-**both** snippets; a release means replacing the whole Head and Footer
-fields in Webflow (never appending — handlers would initialize twice) and
-publishing. Say so in the commit message, and keep `webflow/` identical to
-what is installed.
+A push updates the JS/CSS bundles only. Any change to `loader.html` must be
+re-pasted into Webflow and published to take effect — say so in the commit
+or PR description, and keep `loader.html` identical to what is installed.
 
 ## Commands and release
 
-```sh
-python3 tools/build.py --version vX.Y.Z          # regenerate assets/ and webflow/
-python3 tools/build.py --version vX.Y.Z --check  # verify generated files match source/
+```bash
+pnpm dev      # watch + server on :3000
+pnpm build    # minified -> dist/
+pnpm check    # tsc --noEmit
+pnpm test     # build + Playwright checks
 ```
 
-`--version` defaults to `v1.0.0`; always pass the release being prepared
-(or the current one when only checking). There is no CI — run `--check`
-yourself before every push.
+Node 22 and the pinned pnpm in `package.json`. `dist/` is committed: after
+any `src/` change run `pnpm build` and commit `dist/` with it — CI fails the
+push otherwise, and staging only deploys after `pnpm check`, the browser
+tests and the `dist/` check pass. `pnpm dev` builds in memory and never
+touches `dist/`.
 
-Release exactly as the README describes: edit `source/`, generate with the
-new version, commit the outputs, create and push a new tag, verify the new
-jsDelivr URLs, then replace both Webflow fields, publish to staging, check
-navigation, sliders, the request-demo panel, forms, the skip link and video
-consent, then publish to production. Never move a pushed tag — jsDelivr
-caches exact versions permanently. Never use `@latest`, `@main` or a branch
-URL in production. Roll back by pasting an older release's snippets.
+Release as the README describes: tag a commit whose CI passed, then set
+`RELEASE` in the head snippet — the only version string. Never move a pushed
+tag; cut the next patch. Never use `@latest` or a branch URL in production.
 
 ## Webflow MCP limits
 
@@ -172,8 +135,11 @@ Worked around, not fixed — do not rediscover these.
   `valueType: "custom"`.
 - No variable rename or reorder within a collection. Rename in the Designer
   (preserves ids and aliases; recreating does not).
-- The WHTML importer drops `class` attributes. Create the style, then apply
-  it.
+- The WHTML importer keeps classes that already exist, but drops the whole
+  class list if any one is missing (create classes first, then re-check
+  `styleNames`). It drops every `<img>` attribute and the asset link, turns
+  `<button>` into a Link and every `<span>` into a text Span, and trims a
+  space before `<br>`. GOTCHAS › "From MarketCap Sales" has the fixes.
 - `get_all_elements` does not descend into component definitions — pass the
   component scope. An element "missing" from a page is usually inside one.
 - Concurrent Designer edits change element ids. Re-query on "Element not
@@ -184,12 +150,12 @@ Worked around, not fixed — do not rediscover these.
 ## Session protocol
 
 1. **Start:** read `GOTCHAS.md`. Do not repeat a mistake already logged.
-2. **During:** when something surprising costs time — a Webflow quirk, an
-   inherited-code trap, an MCP limitation, a fix that had to be reverted —
-   add an entry to `GOTCHAS.md` in the same commit as the fix, using the
-   format at the top of that file.
-3. **Scope:** tag an entry `template-candidate` when it would recur on other
-   client projects (including those built from `wf-template`); those entries
-   are collected later to improve the template. Otherwise tag it `project`.
+2. **During:** when something surprising costs time — a Webflow quirk, a
+   template default that gets in the way, an MCP limitation, a fix that had
+   to be reverted — add an entry to `GOTCHAS.md` in the same commit as the
+   fix, using the format at the top of that file.
+3. **Scope:** tag an entry `template-candidate` when it would recur on any
+   project built from `wf-template`; those entries are collected later to
+   improve the template. Otherwise tag it `project`.
 4. Never delete entries. Update `Status` when something is fixed or
    upstreamed.

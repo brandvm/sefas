@@ -1,0 +1,190 @@
+<!-- ============================================================
+SEFAS custom-code loading — three pieces pasted into Webflow.
+The release version lives in ONE place: RELEASE in piece 1.
+
+  prod        = pinned jsDelivr tag (immutable)
+  webflow.io  = latest pushed staging bundle (JS + CSS)
+  dev flag    = the dev server on this machine (staging only)
+
+The bundle includes a compact Dev / Staging switcher in the bottom-left
+corner of *.webflow.io pages. Click the current mode to expand it.
+
+Dev flag — also available via URL param on the staging site:
+   ?bv-dev=1   → dev mode on (persists in localStorage)
+   ?bv-dev=0   → back to normal
+Console equivalent: localStorage.setItem('bv-dev','1') / removeItem.
+
+Dev mode is localhost-only by design. http://localhost is a
+potentially-trustworthy origin, so an https page is allowed to load
+it; a LAN IP is not and gets blocked as mixed content. To check work
+on another device, git push and use the staging bundle (~1 min).
+
+Everything that is not below lives in src/ and ships through the
+bundle. Resist adding site logic to any of these three snippets —
+they are bootstrap only, and they are the one part of the system
+that is not versioned, reviewable, or rollback-able. A push never
+updates them: any change here must be re-pasted into Webflow and
+published.
+
+------------------------------------------------------------
+1) Head code — Site settings → Custom code → Head code.
+
+   Only things that must exist before the bundle does: the shared
+   config (window.BV), meta tags the browser reads at parse time,
+   connection warming, and the pre-paint scroll lock.
+
+   RELEASE is null until the first tag exists. While it is null, a
+   page served from a custom domain uses the STAGING bundle and logs a
+   console error — so attaching a domain before the first release
+   shows the site instead of 404ing every asset. Set RELEASE to the
+   tag before launch; staging must never be what production runs on.
+
+   Site custom code is ignored by the Designer canvas, which is what
+   we want here — no scroll lock, no preloader while designing.
+------------------------------------------------------------ -->
+<!-- Consent, analytics and hosted fonts must initialize from the document head. -->
+<script src="https://embeds.iubenda.com/widgets/75372d29-fbbe-4115-a58d-cb55bf73034a.js"></script>
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NQHZR3VG');
+</script>
+<script src="https://use.typekit.net/wht8anh.js"></script>
+<script>try{Typekit.load({async:true});}catch(e){}</script>
+<script async type="module" data-cmp-ab="2" src="https://cdn.jsdelivr.net/npm/@finsweet/attributes@2/attributes.js" fs-list></script>
+<meta name="theme-color" content="#941EA3" />
+
+<!-- Two lines on purpose: a stylesheet fetch and its font fetches are
+     CORS-different and open separate connections. -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+
+<script>
+  (function () {
+    var RELEASE = "v2.0.0"; // the only production version string
+    var SITE = "sefas";
+    var STAG = "https://brandvm.github.io/" + SITE + "/";
+    var DEV = "http://localhost:3000/";
+    var staging = /\.webflow\.io$/.test(location.hostname);
+    var q = new URLSearchParams(location.search);
+    var flag = staging && q.get("bv-dev") === "1";
+    try {
+      if (staging && q.has("bv-dev")) localStorage.setItem("bv-dev", flag ? "1" : "0");
+      if (staging && !q.has("bv-dev")) flag = localStorage.getItem("bv-dev") === "1";
+    } catch (e) { /* An explicit URL flag still works without storage. */ }
+    var prod = RELEASE
+      ? "https://cdn.jsdelivr.net/gh/brandvm/" + SITE + "@" + RELEASE + "/dist/"
+      : STAG;
+    if (!staging && !RELEASE)
+      console.error("[bv] RELEASE is not set in head code; serving the staging bundle. Tag a release and set RELEASE before launch.");
+    // Shared config — the Embed, the footer loader and the bundle read this.
+    window.BV = {
+      staging: staging, dev: flag, devBase: DEV, stag: STAG,
+      release: RELEASE, prod: prod,
+    };
+
+  })();
+</script>
+
+<!-- ============================================================
+2) CSS — an HTML Embed element ON THE CANVAS, inside a component that
+   sits on every page (the navbar/header component is the usual home).
+   NOT Site settings → Head code.
+
+   Why an Embed and not head code: the Designer canvas ignores site
+   custom code and never runs scripts, but it DOES render an Embed's
+   markup — so a real <link> tag is the only way to see our CSS while
+   designing. An icon font belongs here for the same reason: in head
+   code the canvas would show blank boxes where every icon should be.
+
+   The canvas shows the STAGING stylesheet: push, wait ~1 min, reload
+   the Designer tab. Everywhere else the script below rewrites the href
+   (pinned tag on prod, cache-busted staging on webflow.io) and adds
+   the localhost sheet only when the dev flag is on.
+
+   There is deliberately no static localhost <link> here. It used to
+   let the canvas show unsaved local CSS, but every public visitor's
+   browser then requested http://localhost:3000 before the script could
+   remove it — which can block rendering and triggers Chrome's
+   local-network-access prompt. To see local CSS on the canvas while
+   designing, add this link below bv-css TEMPORARILY, with `pnpm dev`
+   running, and remove it before publishing:
+     <link id="bv-css-dev" rel="stylesheet" href="http://localhost:3000/styles.css" />
+   While both are live they are ADDITIVE: deleting a rule locally does
+   not delete staging's copy of it. Deletions can only be verified
+   after a push.
+
+   GitHub Pages caches ~10 min; bump ?v=1 below to pull fresh staging
+   CSS into the canvas.
+
+   Placement: an Embed in the body loads after Webflow's own
+   stylesheet, so our rules win ties on specificity. That is exactly
+   why repo CSS must not restyle anything the Designer can — see the
+   CSS policy in AGENTS.md.
+------------------------------------------------------------ -->
+<link
+  id="bv-css"
+  rel="stylesheet"
+  href="https://brandvm.github.io/sefas/styles.css?v=1"
+/>
+<script>
+  (function () {
+    var C = window.BV;
+    var base = document.getElementById("bv-css");
+    if (!C) return console.error("[bv] Head code config missing; the stylesheet stays on staging.");
+    if (!base) return;
+    // Runs in the same tick as the link above, so the staging sheet never
+    // applies on prod — the href is settled before first paint.
+    base.href = C.staging ? C.stag + "styles.css?v=" + Date.now() : C.prod + "styles.css";
+    if (C.dev && !document.getElementById("bv-css-dev")) {
+      var dev = document.createElement("link");
+      dev.id = "bv-css-dev";
+      dev.rel = "stylesheet";
+      dev.href = C.devBase + "styles.css";
+      base.parentNode.insertBefore(dev, base.nextSibling); // second, so it wins
+    }
+  })();
+</script>
+
+<!-- ============================================================
+3) JS loader — Site settings → Custom code → Footer code.
+
+Nothing else belongs in the footer. Third-party libraries go through
+`pnpm add` and get bundled: the loader appends its script tag
+dynamically, which makes it async, so a sibling <script defer> in the
+footer is no longer guaranteed to execute first and the bundle can
+find its global undefined.
+
+Rollback = set RELEASE in piece 1 back to the previous tag and publish.
+============================================================ -->
+<script>
+  (function () {
+    var C = window.BV;
+    if (!C) return console.error("[bv] Head code config missing; custom code not loaded.");
+    if (!document.getElementById("bv-css"))
+      console.warn("[bv] CSS embed not found on this page; styles are missing.");
+    function js(src, fallback) {
+      // Set before execution so the switcher sees the bundle that actually
+      // loads, including local -> staging and staging -> pinned fallbacks.
+      C.source = new URL(".", src).href;
+      if (C.source !== C.devBase) {
+        var devCSS = document.getElementById("bv-css-dev");
+        if (devCSS) devCSS.remove();
+        var baseCSS = document.getElementById("bv-css");
+        if (baseCSS) baseCSS.href = C.source + "styles.css" + new URL(src).search;
+      }
+      var s = document.createElement("script");
+      s.src = src;
+      if (fallback) s.onerror = fallback;
+      document.head.appendChild(s);
+    }
+    var v = "?v=" + Date.now();
+    if (C.dev)
+      js(C.devBase + "index.js", function () {
+        js(C.stag + "index.js" + v);
+      });
+    else if (C.staging)
+      js(C.stag + "index.js" + v, C.release ? function () {
+        js(C.prod + "index.js");
+      } : null);
+    else js(C.prod + "index.js" + (C.release ? "" : v));
+  })();
+</script>

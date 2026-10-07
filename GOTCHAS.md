@@ -25,6 +25,33 @@ repos to improve `brandvm/wf-template`.
 
 <!-- Add new entries here, newest first. -->
 
+### 2026-10-07 · Finsweet URL filter and Webflow checkbox states were inverted
+- Area: css
+- Scope: template-candidate
+- Symptom: A query-string filter correctly filtered Resources, but its visual
+  checkbox looked inactive; the first click removed the filter while making
+  the decorative checkbox look active.
+- Cause: Finsweet set the real input and `.is-list-active` correctly, while
+  Webflow's decorative `.w--redirected-checked` class was not synchronized
+  with programmatic URL initialization. Custom CSS styled the Webflow class.
+- Fix: Style `.filter-radio.is-list-active` as the source of truth and force
+  the decorative element inactive when the Finsweet wrapper is inactive.
+- Status: fixed in v2.0.0
+- Found by: codex
+
+### 2026-10-07 · Migrated the hosting-only repository to wf-template
+- Area: release
+- Scope: project
+- Symptom: Site code required separate generated assets plus large Head,
+  Footer and Embed fields, without typed builds or browser regression tests.
+- Cause: `v1.0.0` externalized inherited code but intentionally did not adopt
+  the standard project toolchain.
+- Fix: `v2.0.0` uses the three-piece loader, TypeScript/esbuild, committed
+  dist assets, GitHub Pages staging and Playwright tests. The immutable
+  `v1.0.0` tag remains the rollback point.
+- Status: fixed in v2.0.0
+- Found by: codex
+
 ### 2026-09-29 · Snippets on main differ from the v1.0.0 tag
 - Area: release
 - Scope: project
