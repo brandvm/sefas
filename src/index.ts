@@ -1,6 +1,7 @@
 // Entry point. Existing SEFAS behavior remains isolated in legacy modules while
 // new integrations use typed initializers and the wf-template runtime.
 import { initEnvironmentSwitcher } from './modules/environment-switcher';
+import { initGatedResourceBypass } from './modules/gated-resource-bypass';
 import { initLenis } from './modules/lenis';
 import { initWistiaPlayer } from './modules/wistia-player';
 
@@ -25,6 +26,7 @@ function boot() {
   document.documentElement.classList.remove('is-loading');
   run('environment-switcher', initEnvironmentSwitcher);
   run('wistia-player', initWistiaPlayer);
+  run('gated-resource-bypass', initGatedResourceBypass);
   run('lenis', initLenis);
 }
 

@@ -14,8 +14,8 @@ Webflow:
 3. Site settings → Footer code: one JavaScript bundle loader.
 
 Replace the old fields and global Embed; do not append the new snippets to the
-old code. Release `v1.0.0` remains an immutable rollback point. The new loader
-pins production to `v2.0.0`.
+old code. Releases `v1.0.0` and `v2.0.0` remain immutable rollback points. The
+current loader pins production to `v2.0.1`.
 
 Keep the existing GTM `<noscript>` body Embed. The replacement global Embed is
 the one containing the Phosphor links and large style blocks; those assets now
@@ -41,6 +41,9 @@ the `main` branch.
 - `src/index.ts` isolates initializers so one failure does not block the rest.
 - `src/modules/environment-switcher.ts` provides Dev/Staging selection only on
   the Webflow staging domain.
+- `src/modules/gated-resource-bypass.ts` reveals a gated resource when its URL
+  includes `?ungated=1`; ordinary URLs remain gated and no Pardot submission is
+  made. This is a shareable convenience link, not access control.
 - `src/modules/lenis.ts` bundles the existing Lenis `1.1.5` integration.
 - `src/modules/wistia-player.ts` loads the hosted Wistia player once.
 - `src/legacy/` preserves the remaining tested `v1.0.0` behavior.
@@ -54,9 +57,9 @@ of Webflow's unsynchronized `.w--redirected-checked` visual class.
 ```bash
 pnpm check
 pnpm test
-git tag v2.0.0
+git tag v2.0.1
 git push origin main
-git push origin v2.0.0
+git push origin v2.0.1
 ```
 
 After the tag and staging assets are available, paste all three sections from

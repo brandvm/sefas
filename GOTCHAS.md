@@ -25,6 +25,19 @@ repos to improve `brandvm/wf-template`.
 
 <!-- Add new entries here, newest first. -->
 
+### 2026-10-07 · Gated resource direct links are intentionally shareable
+- Area: js
+- Scope: project
+- Symptom: Client-shared video links needed to reveal the resource without
+  requiring recipients to submit the lead form.
+- Cause: The existing page-specific form code only revealed the Webflow success
+  state after submission and had no direct-link behavior.
+- Fix: `?ungated=1` now reveals the existing success/video area on pages with
+  `#wf-form-Gated-Form` without sending a Pardot request. This is convenience
+  gating, not authorization; anyone with the URL can reuse or forward it.
+- Status: fixed in v2.0.1
+- Found by: human
+
 ### 2026-10-07 · Finsweet URL filter and Webflow checkbox states were inverted
 - Area: css
 - Scope: template-candidate

@@ -12,7 +12,7 @@ source of agent rules — edit this file, never a copy of it.
 - Staging site: confirm the current `*.webflow.io` domain before publishing
 - Staging bundles: `https://brandvm.github.io/sefas/`
 - Production domain: `https://www.sefasinnovation.fr`
-- Production release: `v2.0.0` in `loader.html`; `v1.0.0` is the rollback release
+- Production release: `v2.0.1` in `loader.html`; `v2.0.0` and `v1.0.0` are rollback releases
 
 Release `v2.0.0` migrated inherited code into this template. The migrated
 legacy CSS and JavaScript remain behavior-compatible and may not yet satisfy
