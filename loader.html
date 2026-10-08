@@ -59,7 +59,7 @@ published.
 
 <script>
   (function () {
-    var RELEASE = "v2.0.2"; // the only production version string
+    var RELEASE = "v2.0.3"; // the only production version string
     var SITE = "sefas";
     var STAG = "https://brandvm.github.io/" + SITE + "/";
     var DEV = "http://localhost:3000/";
@@ -155,7 +155,7 @@ find its global undefined.
 
 Rollback = set RELEASE in piece 1 back to the previous tag and publish.
 ============================================================ -->
-<script>
+<script data-cmp-ab="2">
   (function () {
     var C = window.BV;
     if (!C) return console.error("[bv] Head code config missing; custom code not loaded.");

@@ -34,10 +34,11 @@ repos to improve `brandvm/wf-template`.
 - Cause: The new dynamic loader omitted the inherited `data-cmp-ab="2"`
   exemption, so Iubenda treated the complete site behavior bundle as a
   consent-dependent script.
-- Fix: Mark every dynamically created bundle/fallback script with
-  `data-cmp-ab="2"` before insertion. The gated-resource selector also now
-  supports the resource form wrapper instead of depending on one Webflow ID.
-- Status: fixed in v2.0.2
+- Fix: Mark the inline loader itself with `data-cmp-ab="2"` so Iubenda also
+  exempts scripts it creates; mark each generated script too as a defensive
+  fallback. The gated-resource selector now supports the resource form wrapper
+  instead of depending on one Webflow ID.
+- Status: fixed in v2.0.3
 - Found by: codex
 
 ### 2026-10-07 · Gated resource direct links are intentionally shareable

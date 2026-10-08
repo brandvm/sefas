@@ -9,7 +9,7 @@ const repo = source.match(/var SITE = "([^"]+)"/)[1];
 const configuredRelease = source.match(/var RELEASE = ("[^"]+"|null);/)[1];
 function loader(release) {
   const text = source.replace(`var RELEASE = ${configuredRelease};`, `var RELEASE = ${JSON.stringify(release)};`);
-  const inline = [...text.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match => match[0]);
+  const inline = [...text.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(match => match[0]);
   return {
     scripts: [
       inline.find(script => script.includes('var RELEASE =')),
@@ -38,6 +38,7 @@ async function setup(page, {
 } = {}) {
   const { scripts, links } = loader(release);
   expect(scripts).toHaveLength(3);
+  expect(scripts[2]).toContain('data-cmp-ab="2"');
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   page.on('request', request => requests.push(request.url()));
