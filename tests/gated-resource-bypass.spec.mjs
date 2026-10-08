@@ -17,12 +17,12 @@ const markup = `<!doctype html><html><body>
   <script>${js}<\/script>
 </body></html>`;
 
-async function open(page, search = '') {
+async function open(page, search = '', html = markup) {
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.route('**/*', (route) => {
     if (route.request().isNavigationRequest()) {
-      return route.fulfill({ contentType: 'text/html', body: markup });
+      return route.fulfill({ contentType: 'text/html', body: html });
     }
     return route.fulfill({ contentType: 'text/javascript', body: '' });
   });
@@ -47,5 +47,14 @@ test('the normal resource URL remains gated', async ({ page }) => {
   await expect(page.locator('#wf-form-Gated-Form')).toBeVisible();
   await expect(page.locator('.w-form-done')).toBeHidden();
   await expect(page.locator('wistia-player')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('the resource wrapper works when Webflow gives the form a different ID', async ({ page }) => {
+  const variant = markup.replace('id="wf-form-Gated-Form"', 'id="wf-form-Resource-Access"');
+  const errors = await open(page, '?ungated=1', variant);
+
+  await expect(page.locator('#wf-form-Resource-Access')).toBeHidden();
+  await expect(page.locator('.w-form-done')).toBeVisible();
   expect(errors).toEqual([]);
 });

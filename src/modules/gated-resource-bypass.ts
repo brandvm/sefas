@@ -1,4 +1,3 @@
-const FORM_ID = 'wf-form-Gated-Form';
 const BYPASS_PARAMETER = 'ungated';
 const BYPASS_VALUE = '1';
 
@@ -39,10 +38,12 @@ export function initGatedResourceBypass() {
   const query = new URLSearchParams(window.location.search);
   if (query.get(BYPASS_PARAMETER) !== BYPASS_VALUE) return;
 
-  const form = document.getElementById(FORM_ID);
-  if (!(form instanceof HTMLFormElement)) return;
+  const resourceWrapper = document.querySelector<HTMLElement>('.resource-form-block.w-form, [data-gated-resource].w-form');
+  const form = resourceWrapper?.querySelector<HTMLFormElement>('form')
+    ?? document.querySelector<HTMLFormElement>('#wf-form-Gated-Form, form[data-name="Gated Form"]');
+  if (!form) return;
 
-  const wrapper = form.closest('.w-form');
+  const wrapper = resourceWrapper ?? form.closest('.w-form');
   const success = wrapper?.querySelector<HTMLElement>('.w-form-done');
   if (!success) return;
 

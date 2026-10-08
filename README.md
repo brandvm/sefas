@@ -14,8 +14,8 @@ Webflow:
 3. Site settings → Footer code: one JavaScript bundle loader.
 
 Replace the old fields and global Embed; do not append the new snippets to the
-old code. Releases `v1.0.0` and `v2.0.0` remain immutable rollback points. The
-current loader pins production to `v2.0.1`.
+old code. Earlier tags remain immutable rollback points. The current loader
+pins production to `v2.0.2`.
 
 Keep the existing GTM `<noscript>` body Embed. The replacement global Embed is
 the one containing the Phosphor links and large style blocks; those assets now
@@ -57,9 +57,9 @@ of Webflow's unsynchronized `.w--redirected-checked` visual class.
 ```bash
 pnpm check
 pnpm test
-git tag v2.0.1
+git tag v2.0.2
 git push origin main
-git push origin v2.0.1
+git push origin v2.0.2
 ```
 
 After the tag and staging assets are available, paste all three sections from

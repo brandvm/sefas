@@ -58,6 +58,7 @@ async function setup(page, {
   });
   await page.goto(url);
   await expect(page.locator('html')).not.toHaveClass(/is-loading/);
+  await expect(page.locator('script[src$="index.js"], script[src*="index.js?"]').last()).toHaveAttribute('data-cmp-ab', '2');
   return errors;
 }
 
